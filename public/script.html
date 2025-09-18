@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>YouTube Playlist Analyzer</title>
+    <style>
+      body {
+        margin: 0;
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        background: linear-gradient(135deg, #93c0ed, #e9ecef) no-repeat center
+          center fixed;
+        background-size: cover;
+        color: #333;
+      }
+
+      .container {
+        max-width: 900px;
+        margin: 40px auto;
+        padding: 30px;
+        background: #f4e6ba;
+        border-radius: 16px;
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+        animation: fadeIn 0.5s ease-in-out;
+      }
+
+      h1 {
+        text-align: center;
+        color: #dc3545;
+        margin-bottom: 25px;
+      }
+
+      .input-box {
+        display: flex;
+        gap: 12px;
+        justify-content: center;
+        margin-bottom: 20px;
+      }
+
+      input {
+        flex: 1;
+        padding: 12px;
+        border: 1px solid #ccc;
+        border-radius: 8px;
+        font-size: 16px;
+      }
+
+      button {
+        padding: 8px 16px;
+        background: #dc3545;
+        border: none;
+        color: white;
+        border-radius: 6px;
+        cursor: pointer;
+        font-weight: bold;
+        transition: 0.3s ease;
+      }
+
+      button:hover:not(:disabled) {
+        background: #b02a37;
+        transform: translateY(-1px);
+      }
+
+      button:disabled {
+        background: #6c757d;
+        cursor: not-allowed;
+      }
+
+      #playlistInfo {
+        text-align: center;
+        margin: 20px 0;
+      }
+
+      .progress {
+        width: 100%;
+        background: #000000;
+        border-radius: 12px;
+        margin: 20px 0;
+        overflow: hidden;
+      }
+
+      .progress-bar {
+        height: 22px;
+        width: 0%;
+        background: linear-gradient(90deg, #9bcdfe, #ddebf9);
+        text-align: center;
+        color: #f9f475;
+        font-size: 13px;
+        font-weight: bold;
+        line-height: 22px;
+        transition: width 0.4s ease-in-out;
+      }
+
+      #videoList {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 12px;
+      }
+
+      .video {
+        padding: 15px;
+        border: 1px solid #ddd;
+        border-radius: 10px;
+        background: #fdfdfd;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        transition: transform 0.2s ease;
+      }
+
+      .video:hover {
+        transform: scale(1.02);
+        background: #fafafa;
+      }
+
+      .video span {
+        font-size: 15px;
+        font-weight: 500;
+      }
+
+      a {
+        text-decoration: none;
+        color: #00bd71;
+        margin-right: 10px;
+      }
+
+      a:hover {
+        text-decoration: underline;
+      }
+
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(20px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>🎬 Playlist Tracker</h1>
+      <div class="input-box">
+        <input
+          type="text"
+          id="playlistInput"
+          placeholder="Enter Playlist URL or ID"
+        />
+        <button onclick="loadPlaylist()">Load</button>
+      </div>
+
+      <div id="playlistInfo"></div>
+      <div class="progress">
+        <div class="progress-bar" id="progressBar">0%</div>
+      </div>
+      <div id="videoList"></div>
+    </div>
+
+    <script>
+      let videos = [];
+      let totalDuration = 0;
+      let completedDuration = 0;
+
+      async function loadPlaylist() {
+        const id = document.getElementById("playlistInput").value;
+        const res = await fetch(`/playlist/${id}`);
+        const data = await res.json();
+
+        videos = data.videos.map((v) => ({
+          ...v,
+          completed: false,
+          seconds: parseDuration(v.duration),
+        }));
+
+        totalDuration = videos.reduce((sum, v) => sum + v.seconds, 0);
+
+        document.getElementById(
+          "playlistInfo"
+        ).innerHTML = `<h2>${data.title}</h2>
+         <p><b>Total Videos:</b> ${data.totalVideos}</p>
+         <p><b>Total Time:</b> ${data.totalTimeFormatted}</p>`;
+
+        renderVideos();
+        updateProgress();
+      }
+
+      function renderVideos() {
+        const list = document.getElementById("videoList");
+        list.innerHTML = "";
+        videos.forEach((video, index) => {
+          const div = document.createElement("div");
+          div.className = "video";
+          div.innerHTML = `
+            <span>${index + 1}. ${video.title} <small>(${video.duration})</small></span>
+            <div>
+              <a href="https://www.youtube.com/watch?v=${video.id}" target="_blank">▶ Watch</a>
+              <button onclick="markComplete(${index})" ${
+            video.completed ? "disabled" : ""
+          }>
+                ${video.completed ? " Done" : "Mark Complete"}
+              </button>
+            </div>
+          `;
+          list.appendChild(div);
+        });
+      }
+
+      function markComplete(index) {
+        if (!videos[index].completed) {
+          videos[index].completed = true;
+          completedDuration += videos[index].seconds;
+        }
+        renderVideos();
+        updateProgress();
+      }
+
+      function updateProgress() {
+        const percent = totalDuration
+          ? Math.round((completedDuration / totalDuration) * 100)
+          : 0;
+
+        const bar = document.getElementById("progressBar");
+        bar.style.width = percent + "%";
+        bar.textContent = percent + "%";
+      }
+
+      function parseDuration(duration) {
+        const parts = duration.split(":").map(Number);
+        if (parts.length === 3) {
+          return parts[0] * 3600 + parts[1] * 60 + parts[2];
+        } else if (parts.length === 2) {
+          return parts[0] * 60 + parts[1];
+        } else {
+          return parts[0];
+        }
+      }
+    </script>
+  </body>
+</html>
