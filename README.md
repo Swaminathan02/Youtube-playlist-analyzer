@@ -1,5 +1,5 @@
 # 🎬 YouTube Playlist Tracker
-### [Live Demo](https://www.youtube.com/playlist?list=PLsyeobzWxl7r2ukVgTqIQcl-1T0C2mzau)
+### [Live Demo](https://youtube-playlist-analyzer.onrender.com/)
 A mini project built with **Node.js + Express.js** and a simple **HTML/CSS/JS frontend** that analyzes a YouTube playlist.  
 It shows the **total videos, total duration**, and allows marking videos as **completed** with a progress tracker (based on video durations).  
 
