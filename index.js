@@ -25,6 +25,10 @@ function calc(seconds) {
     return time;
 }
 
+app.get("/", (req, res) => {
+  res.send("Jai Shree Ram");
+});
+
 app.get("/playlist/:id", async (req, res) => {
   try {
     const playlistIdOrUrl = req.params.id;
