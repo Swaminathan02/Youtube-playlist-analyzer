@@ -24,10 +24,6 @@ function calc(seconds) {
     return time;
 }
 
-app.get("/", (req, res) => {
-  res.send("Jai Shree Ram");
-});
-
 app.get("/playlist/:id", async (req, res) => {
   try {
     const playlistIdOrUrl = req.params.id;
@@ -53,6 +49,10 @@ app.get("/playlist/:id", async (req, res) => {
     console.error(err);
     res.status(500).json({ error: err.message });
   }
+});
+
+app.get("/", (req, res) => {
+  res.send("Jai Shree Ram");
 });
 
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
