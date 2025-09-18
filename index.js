@@ -2,7 +2,7 @@ const express = require("express");
 const ytpl = require("ytpl");
 const app = express();
 const path = require("path");
-const PORT = process.env.PORT || 4000
+const PORT = process.env.PORT || 4000;
 app.use(express.static(path.join(__dirname, "public")));
 
 function durationToSeconds(duration) {
@@ -16,12 +16,12 @@ function durationToSeconds(duration) {
 }
 
 function calc(seconds) {
-    let time = Math.floor(seconds/3600) + ' hrs : ';
-    seconds %= 3600;
-    time += Math.floor(seconds / 60) + ' min : ';
-    seconds %= 60;
-    time += Math.floor(seconds) + ' sec';
-    return time;
+  let time = Math.floor(seconds / 3600) + " hrs : ";
+  seconds %= 3600;
+  time += Math.floor(seconds / 60) + " min : ";
+  seconds %= 60;
+  time += Math.floor(seconds) + " sec";
+  return time;
 }
 
 app.get("/playlist/:id", async (req, res) => {
@@ -52,6 +52,7 @@ app.get("/playlist/:id", async (req, res) => {
 });
 
 app.get("/", (req, res) => {
+  res.sendFile(path.join(__dirname, "public", "script.html"));
   res.send("Jai Shree Ram");
 });
 
