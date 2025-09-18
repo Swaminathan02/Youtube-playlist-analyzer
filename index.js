@@ -1,9 +1,8 @@
 const express = require("express");
 const ytpl = require("ytpl");
-
 const app = express();
 const path = require("path");
-
+const PORT = process.env.PORT || 3000
 app.use(express.static(path.join(__dirname, "public")));
 
 function durationToSeconds(duration) {
@@ -56,4 +55,4 @@ app.get("/playlist/:id", async (req, res) => {
   }
 });
 
-app.listen(3000, () => console.log("Server running on port 3000"));
+app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
