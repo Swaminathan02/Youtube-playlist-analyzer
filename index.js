@@ -53,7 +53,6 @@ app.get("/playlist/:id", async (req, res) => {
 
 app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "public", "script.html"));
-  res.send("Jai Shree Ram");
 });
 
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
